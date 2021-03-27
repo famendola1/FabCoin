@@ -26,9 +26,7 @@ contract("FabCoin", accounts => {
 
       // We already called claim() from this address in the previous test, so
       // calling claim() again will revert.
-      truffleAssert.reverts(instance.claim({
-        from: accounts[0]
-      }));
+      truffleAssert.reverts(instance.claim({ from: accounts[0] }));
 
       let balance = await instance.balanceOf(accounts[0]);
       expect(balance.toNumber()).to.equal(1);
@@ -39,9 +37,7 @@ contract("FabCoin", accounts => {
         let instance = await FabCoin.deployed();
 
         // Transfer 1 FabCoin from account 0 to account 1;
-        await instance.transfer(accounts[1], 1, {
-          from: accounts[0]
-        });
+        await instance.transfer(accounts[1], 1, { from: accounts[0] });
 
         let balance0 = await instance.balanceOf(accounts[0]);
         expect(balance0.toNumber()).to.equal(0);
@@ -52,5 +48,21 @@ contract("FabCoin", accounts => {
           from: accounts[0]
         }));
       });
+  });
+
+  it("should keep track of remaining FabCoin", async () => {
+    let instance = await FabCoin.deployed();
+
+    let initial_remain = await instance.remaining();
+
+    // Deployed instance already has one FabCoin claimed.
+    expect(initial_remain.toNumber()).to.equal(99);
+
+    var i = 1;
+    for (;i < accounts.length; i++) {
+      await instance.claim({ from: accounts[i] });
+      let remaining = await instance.remaining();
+      expect(remaining.toNumber()).to.equal(initial_remain.toNumber() - i);
+    }
   });
 })

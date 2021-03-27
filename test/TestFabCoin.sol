@@ -79,4 +79,17 @@ contract TestFabCoin {
       Assert.equal(fabCoin.balanceOf(address(this)), 0, "claim() grants max 1 FabCoin per address.");
       Assert.equal(fabCoin.balanceOf(tx.origin), 1, "claim() grants max 1 FabCoin per address.");
     }
+
+    function testRemainingUsingDeployedContract() public {
+      FabCoin fabCoin = FabCoin(DeployedAddresses.FabCoin());
+
+      Assert.equal(fabCoin.remaining(), 99, "1 FabCoin claimed so far, 99 remaining.");
+    }
+
+    function tesRemainingUsingNewFabCoin() public {
+      FabCoin fabCoin = new FabCoin(100);
+      fabCoin.claim();
+
+      Assert.equal(fabCoin.remaining(), 99, "1 Fabcoin claimed so far, 98 remaining.");
+    }
 }

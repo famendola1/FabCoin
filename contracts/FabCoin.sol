@@ -14,7 +14,11 @@ contract FabCoin is ERC20Capped {
         _claimed[msg.sender] = true;
     }
 
+    function remaining() public view returns (uint256) {
+      return cap() - totalSupply();
+    }
+
     function decimals() public view virtual override returns (uint8) {
-        return 0;
+        return uint8(0);
     }
 }
